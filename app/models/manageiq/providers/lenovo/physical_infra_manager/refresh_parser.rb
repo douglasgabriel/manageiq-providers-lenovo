@@ -3,38 +3,58 @@ module ManageIQ::Providers::Lenovo
   class PhysicalInfraManager::RefreshParser < EmsRefresh::Parsers::Infra
     include ManageIQ::Providers::Lenovo::RefreshHelperMethods
 
-    POWER_STATE_MAP = {
-      8  => "on",
-      5  => "off",
-      18 => "Standby",
-      0  => "Unknown"
-    }.freeze
+    require_relative './parsers/parser'
 
-    HEALTH_STATE_MAP = {
-      "normal"          => "Valid",
-      "non-critical"    => "Valid",
-      "warning"         => "Warning",
-      "critical"        => "Critical",
-      "unknown"         => "None",
-      "minor-failure"   => "Critical",
-      "major-failure"   => "Critical",
-      "non-recoverable" => "Critical",
-      "fatal"           => "Critical",
-      nil               => "Unknown"
-    }.freeze
+    # POWER_STATE_MAP = {
+    #   8  => "on",
+    #   5  => "off",
+    #   18 => "Standby",
+    #   0  => "Unknown"
+    # }.freeze
 
-    def initialize(ems, options = nil)
-      ems_auth = ems.authentications.first
+    # HEALTH_STATE_MAP = {
+    #   "normal"          => "Valid",
+    #   "non-critical"    => "Valid",
+    #   "warning"         => "Warning",
+    #   "critical"        => "Critical",
+    #   "unknown"         => "None",
+    #   "minor-failure"   => "Critical",
+    #   "major-failure"   => "Critical",
+    #   "non-recoverable" => "Critical",
+    #   "fatal"           => "Critical",
+    #   nil               => "Unknown"
+    # }.freeze
 
-      @ems               = ems
-      @connection        = ems.connect(:user => ems_auth.userid,
-                                       :pass => ems_auth.password,
-                                       :host => ems.endpoints.first.hostname,
-                                       :port => ems.endpoints.first.port)
-      @options           = options || {}
+    # def initialize(ems, options = nil)
+    #   ems_auth = ems.authentications.first
+
+    #   @ems               = ems
+    #   @connection        = ems.connect(:user => ems_auth.userid,
+    #                                    :pass => ems_auth.password,
+    #                                    :host => ems.endpoints.first.hostname,
+    #                                    :port => ems.endpoints.first.port)
+    #   @options           = options || {}
+    #   @data              = {}
+    #   @data_index        = {}
+    #   @host_hash_by_name = {}
+    # end
+
+    def initialize
+      ems_auth = 'default'
+      @connection        = ems.connect(:user => 'admin',
+                                       :pass => '123@admin',
+                                       :host => 'https://10.243.2.107',
+                                       :port => '443')
+      @options           = {}
       @data              = {}
       @data_index        = {}
       @host_hash_by_name = {}
+    end
+
+    # TODO: ver como recuperar a versão do lxca
+    def self.get_parser
+      version = '1.3' # substituir por código que recupera versão
+      ManageIQ::Providers::Lenovo::Parser.get_instance(version)
     end
 
     def ems_inv_to_hashes
@@ -287,8 +307,8 @@ module ManageIQ::Providers::Lenovo
         :serial_number          => node.serialNumber,
         :field_replaceable_unit => node.FRU,
         :host                   => get_host_relationship(node),
-        :power_state            => POWER_STATE_MAP[node.powerStatus],
-        :health_state           => HEALTH_STATE_MAP[node.cmmHealthState.nil? ? node.cmmHealthState : node.cmmHealthState.downcase],
+        # :power_state            => POWER_STATE_MAP[node.powerStatus],
+        # :health_state           => HEALTH_STATE_MAP[node.cmmHealthState.nil? ? node.cmmHealthState : node.cmmHealthState.downcase],
         :vendor                 => "lenovo",
         :computer_system        => {
           :hardware => {

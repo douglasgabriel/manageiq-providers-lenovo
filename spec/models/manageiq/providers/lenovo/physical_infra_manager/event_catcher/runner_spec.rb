@@ -13,6 +13,6 @@ describe ManageIQ::Providers::Lenovo::PhysicalInfraManager::EventCatcher::Runner
   end
 
   it 'will stop the event monitor without any exceptions occurring' do
-    runner.stop_event_monitor
+    runner.stop_event_monitor    
   end
 end
