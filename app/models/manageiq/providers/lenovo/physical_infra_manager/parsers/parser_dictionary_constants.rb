@@ -1,5 +1,5 @@
 module ManageIQ::Providers::Lenovo
-  class DictionaryConstants
+  class ParserDictionaryConstants
 
     POWER_STATE_MAP = {
       8  => "on",
@@ -20,10 +20,6 @@ module ManageIQ::Providers::Lenovo
       "fatal"           => "Critical",
       nil               => "Unknown"
     }.freeze
-
-    def teste
-      puts "qualquer"
-    end
-
+    
   end
 end
